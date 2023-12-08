@@ -1,0 +1,76 @@
+const { app, BrowserWindow, session, ipcMain } = require('electron');
+const Store = require('electron-store');
+const path = require('path');
+
+const store = new Store();
+
+const createWindow = () => {
+    const window = new BrowserWindow({
+        width: 1280,
+        height: 720,
+
+        webPreferences: {
+            preload: path.join(__dirname, 'scripts/preload.js')
+        },
+
+        // Hide menu bar unless ALT is pressed
+        autoHideMenuBar: true,
+        title: 'FlexiDash Desktop'
+    });
+
+    // Load file
+    // window.loadFile('views/index.html');
+
+    // Settings data
+    let config = store.get('config');
+    if (!config) {
+        store.set('config', {
+            instance: {
+                url: 'http://localhost:3000',
+            }
+        });
+
+        config = store.get('config');
+    }
+
+    window.webContents.setUserAgent('FlexiDashDesktop/1.0 (Electron)');
+
+    // Intercept all web requests
+    const filter = {
+        urls: ['*://*/*']
+    };
+
+    session.defaultSession.webRequest.onBeforeRequest(filter, (details, callback) => {
+        if (details.url.includes(config.instance.url) && !details.url.includes('desktop=true')) {
+            // Modify the URL to include ?desktop=true
+            const modifiedUrl = details.url + (details.url.includes('?') ? '&' : '?') + 'desktop=true';
+            details.url = modifiedUrl;
+
+            return callback({ cancel: false, redirectURL: details.url });
+        }
+
+        return callback({ cancel: false });
+    });
+
+    window.webContents.loadURL(config.instance.url);
+
+    // DevTools
+    // window.webContents.openDevTools();
+}
+
+app.whenReady().then(() => {
+    // Handle application data being sent back
+    ipcMain.handle('config:getAll', async () => {
+        return store.get('config');
+    });
+
+    createWindow();
+
+    app.on('activate', () => {
+        if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+});
+
+app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') app.quit();
+});

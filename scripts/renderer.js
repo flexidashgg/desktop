@@ -1,0 +1,1 @@
+document.getElementById('config_data').innerText = 'hello';
