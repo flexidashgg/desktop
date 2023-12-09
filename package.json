@@ -1,6 +1,6 @@
 {
     "name": "desktop",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "FlexiDash Desktop client.",
     "repository": {
         "url": "https://github.com/flexidashgg/desktop"
@@ -31,5 +31,10 @@
         "electron-squirrel-startup": "^1.0.0",
         "electron-store": "^8.1.0",
         "update-electron-app": "^3.0.0"
+    },
+    "build": {
+        "appId": "lol.lucat.flexidash.desktop",
+        "productName": "FlexiDash Desktop",
+        "copyright": "Luca Tolton"
     }
 }
