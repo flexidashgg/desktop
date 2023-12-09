@@ -11,15 +11,15 @@ jobs:
                 os: [macos-latest, ubuntu-latest, windows-latest]
 
         steps:
-            - name: Check out Git repository
+        -   name: Check out Git repository
             uses: actions/checkout@v1
 
-            - name: Install Node.js, NPM and Yarn
+        -   name: Install Node.js, NPM and Yarn
             uses: actions/setup-node@v1
             with:
                 node-version: 18
 
-            - name: Build/release Electron app
+        -   name: Build/release Electron app
             uses: samuelmeuli/action-electron-builder@v1
             with:
                 # GitHub token, automatically provided to the action
