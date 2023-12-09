@@ -31,7 +31,7 @@ const createWindow = () => {
     if (!config) {
         store.set('config', {
             instance: {
-                url: 'http://localhost:3000',
+                url: null,
             }
         });
 

@@ -39,4 +39,18 @@ module.exports = {
             config: {},
         },
     ],
+
+    publishers: [
+        {
+            name: '@electron-forge/publisher-github',
+            config: {
+                repository: {
+                    owner: 'flexidashgg',
+                    name: 'desktop'
+                },
+                prerelease: false,
+                draft: true
+            }
+        }
+    ]
 };
