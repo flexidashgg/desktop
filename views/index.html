@@ -75,90 +75,11 @@ Acknowledgements:
                 </div>
             </div>
             <div class="text-center text-muted mt-3">
-                FlexiDash Desktop is an easy way to access your FlexiDash instance.
-                Simply enter the URL you normally use on your browser, and you'll be sent to FlexiDash.
-                The URL is saved for future use.
+                FlexiDash Desktop v<span id="version"></span>.<br />
+                Copyright © 2023 <a href="https://lucat.lol" target="_blank">Luca Tolton</a>. All rights reserved.
             </div>
         </div>
     </div>
-
-    <!-- Authentication script -->
-    <script>
-        const alertDiv = document.getElementById('alert-div');
-        const alertText = document.getElementById('alert-text');
-
-        function startFlow(provider = null) {
-            alertDiv.style.display = 'none';
-            alertDiv.classList.remove('alert-success', 'alert-danger');
-            alertText.textContent = '';
-
-            document.getElementById(provider + '-spinner').style.display = 'block';
-
-            const popupWidth = 515; // Set the width of the popup window
-            const popupHeight = 700; // Set the height of the popup window
-
-            // Calculate the center coordinates of the screen
-            const screenWidth = window.screen.width;
-            const screenHeight = window.screen.height;
-            const centerX = (screenWidth - popupWidth) / 2;
-            const centerY = (screenHeight - popupHeight) / 2;
-
-            // Open the popup window and position it at the center
-            const popupWindow = window.open('/auth/login/start/' + provider, 'Redirecting... | Luca Hosting', `width=${popupWidth},height=${popupHeight},left=${centerX},top=${centerY}`);
-
-            // Check if the popup window was blocked by the browser's popup blocker
-            if (!popupWindow || popupWindow.closed || typeof popupWindow.closed === 'undefined') {
-                document.getElementById(provider + '-spinner').style.display = 'none';
-                alert('Popup window was blocked or closed.');
-
-                alertText.textContent = 'The pop-up window was closed or blocked by your browser.';
-                alertDiv.classList.add('alert-danger');
-                alertDiv.style.display = 'block';
-
-                clearInterval(popupInterval);
-            }
-
-            const popupInterval = setInterval(() => {
-                if (popupWindow.closed) {
-                    document.getElementById(provider + '-spinner').style.display = 'none';
-
-                    alertText.textContent = 'The pop-up window was closed or blocked by your browser.';
-                    alertDiv.classList.add('alert-danger');
-                    alertDiv.style.display = 'block';
-
-                    clearInterval(popupInterval);
-                }
-            }, 1000);
-
-            // Add an event listener to receive the posted message
-            window.addEventListener('message', (e) => {
-                if (e.origin !== window.location.origin) return;
-
-                document.getElementById(provider + '-spinner').style.display = 'none';
-
-                clearInterval(popupInterval);
-
-                const data = e.data;
-                console.log(data);
-
-                if (data.authSuccess) {
-                    alertText.textContent = 'Success! Redirecting you...';
-                    alertDiv.classList.add('alert-success');
-                    alertDiv.style.display = 'block';
-
-                    let url = new URLSearchParams(window.location.search);
-                    console.log(url);
-                    if (url.has('return')) return window.location.href = url.get('return');
-
-                    return window.location.href = '/';
-                } else {
-                    alertText.textContent = data.error;
-                    alertDiv.classList.add('alert-danger');
-                    alertDiv.style.display = 'block';
-                }
-            });
-        }
-    </script>
 
     <!-- Tabler JS -->
     <script src="../static/js/tabler.min.js" defer></script>

@@ -4,6 +4,8 @@ const path = require('path');
 
 const store = new Store();
 
+const { version } = require('./package.json');
+
 if (require('electron-squirrel-startup')) app.quit();
 
 // Auto update checker
@@ -38,7 +40,7 @@ const createWindow = () => {
     }
 
     // Update user agent
-    window.webContents.setUserAgent('FlexiDashDesktop/1.0 (Electron)');
+    window.webContents.setUserAgent(`FlexiDashDesktop/${version} (Electron)`);
 
     // Intercept all web requests
     const filter = {
@@ -49,13 +51,13 @@ const createWindow = () => {
         if (details.url.includes('/desktop/changeInstance')) {
             store.set('config.instance.url', null);
 
-            window.loadFile('views/index.html');
+            window.loadFile(`views/index.html`);
             return callback({ cancel: true, redirectURL: '/' });
         }
 
-        if (details.url.includes(config.instance.url) && !details.url.includes('desktop=true')) {
+        if (details.url.includes(config.instance.url) && !details.url.includes(`desktop=true`)) {
             // Modify the URL to include ?desktop=true
-            const modifiedUrl = details.url + (details.url.includes('?') ? '&' : '?') + 'desktop=true';
+            const modifiedUrl = details.url + (details.url.includes('?') ? '&' : '?') + `desktop=true&desktopVersion=${version}`;
             details.url = modifiedUrl;
 
             return callback({ cancel: false, redirectURL: details.url });
@@ -81,10 +83,14 @@ const createWindow = () => {
         }, 250);
     });
 
+    window.webContents.on('did-finish-load', () => {
+        window.webContents.send('version', version);
+    });
+
     // Load web content
     window.loadFile('views/loading.html');
     setTimeout(() => {
-        if (!config.instance.url) window.loadFile('views/index.html');
+        if (!config.instance.url) window.loadFile(`views/index.html`);
         else window.webContents.loadURL(config.instance.url);
     }, 250);
 
