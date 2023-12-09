@@ -67,7 +67,7 @@ const createWindow = () => {
     // IPC events
     // Instance selection changer
     ipcMain.on('selectInstance', (event, data) => {
-        console.log(`[selectInstance] Received data from IPC: ${data}`);
+        //console.log(`[selectInstance] Received data from IPC: ${data}`);
 
         // Update & re-store config
         store.set('config.instance.url', data);
