@@ -4,6 +4,11 @@ const path = require('path');
 
 const store = new Store();
 
+if (require('electron-squirrel-startup')) app.quit();
+
+// Auto update checker
+require('update-electron-app')();
+
 const createWindow = () => {
     const window = new BrowserWindow({
         width: 1280,
@@ -60,22 +65,29 @@ const createWindow = () => {
         return callback({ cancel: false });
     });
 
-    // Check for config; if none, load instance selector
-    if (!config.instance.url) window.loadFile('views/index.html');
-    else window.webContents.loadURL(config.instance.url);
-
     // IPC events
     // Instance selection changer
     ipcMain.on('selectInstance', (event, data) => {
         //console.log(`[selectInstance] Received data from IPC: ${data}`);
+
+        window.loadFile('views/loading.html');
 
         // Update & re-store config
         store.set('config.instance.url', data);
         config = store.get('config');
 
         // Redirect to URL
-        window.webContents.loadURL(config.instance.url);
+        setTimeout(() => {
+            window.webContents.loadURL(config.instance.url);
+        }, 250);
     });
+
+    // Load content
+    window.loadFile('views/loading.html');
+    setTimeout(() => {
+        if (!config.instance.url) window.loadFile('views/index.html');
+        else window.webContents.loadURL(config.instance.url);
+    }, 250);
 
     // DevTools
     // window.webContents.openDevTools();
