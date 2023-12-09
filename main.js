@@ -7,7 +7,8 @@ const store = new Store();
 if (require('electron-squirrel-startup')) app.quit();
 
 // Auto update checker
-require('update-electron-app')();
+// broken, currently disabled
+//require('update-electron-app')();
 
 const createWindow = () => {
     // Create the window
@@ -88,6 +89,7 @@ const createWindow = () => {
     }, 250);
 
     // DevTools
+    // ! Debugging only
     // window.webContents.openDevTools();
 }
 
