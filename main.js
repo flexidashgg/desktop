@@ -10,6 +10,7 @@ if (require('electron-squirrel-startup')) app.quit();
 require('update-electron-app')();
 
 const createWindow = () => {
+    // Create the window
     const window = new BrowserWindow({
         width: 1280,
         height: 720,
@@ -22,9 +23,6 @@ const createWindow = () => {
         autoHideMenuBar: true,
         title: 'FlexiDash Desktop'
     });
-
-    // Load file
-    // window.loadFile('views/index.html');
 
     // Settings data
     let config = store.get('config');
@@ -82,7 +80,7 @@ const createWindow = () => {
         }, 250);
     });
 
-    // Load content
+    // Load web content
     window.loadFile('views/loading.html');
     setTimeout(() => {
         if (!config.instance.url) window.loadFile('views/index.html');
@@ -94,11 +92,6 @@ const createWindow = () => {
 }
 
 app.whenReady().then(() => {
-    // Handle application data being sent back
-    ipcMain.handle('config:getAll', async () => {
-        return 'config';
-    });
-
     createWindow();
 
     app.on('activate', () => {
