@@ -78,7 +78,7 @@ const createWindow = () => {
     });
 
     // DevTools
-    window.webContents.openDevTools();
+    // window.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
