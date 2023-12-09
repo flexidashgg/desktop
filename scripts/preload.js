@@ -1,7 +1,5 @@
-const { contextBridge, ipcRenderer } = require('electron/renderer')
+const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('desktopAPI', {
-    getConfig: () => ipcRenderer.invoke('config:getAll')
+    selectInstance: (url) => ipcRenderer.send('selectInstance', url),
 });
-
-document.getElementById('config_data').innerText = '1';

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, session, ipcMain } = require('electron');
+const { app, BrowserWindow, session, ipcMain, nativeTheme } = require('electron');
 const Store = require('electron-store');
 const path = require('path');
 
@@ -33,6 +33,7 @@ const createWindow = () => {
         config = store.get('config');
     }
 
+    // Update user agent
     window.webContents.setUserAgent('FlexiDashDesktop/1.0 (Electron)');
 
     // Intercept all web requests
@@ -41,6 +42,13 @@ const createWindow = () => {
     };
 
     session.defaultSession.webRequest.onBeforeRequest(filter, (details, callback) => {
+        if (details.url.includes('/desktop/changeInstance')) {
+            store.set('config.instance.url', null);
+
+            window.loadFile('views/index.html');
+            return callback({ cancel: true, redirectURL: '/' });
+        }
+
         if (details.url.includes(config.instance.url) && !details.url.includes('desktop=true')) {
             // Modify the URL to include ?desktop=true
             const modifiedUrl = details.url + (details.url.includes('?') ? '&' : '?') + 'desktop=true';
@@ -52,16 +60,31 @@ const createWindow = () => {
         return callback({ cancel: false });
     });
 
-    window.webContents.loadURL(config.instance.url);
+    // Check for config; if none, load instance selector
+    if (!config.instance.url) window.loadFile('views/index.html');
+    else window.webContents.loadURL(config.instance.url);
+
+    // IPC events
+    // Instance selection changer
+    ipcMain.on('selectInstance', (event, data) => {
+        console.log(`[selectInstance] Received data from IPC: ${data}`);
+
+        // Update & re-store config
+        store.set('config.instance.url', data);
+        config = store.get('config');
+
+        // Redirect to URL
+        window.webContents.loadURL(config.instance.url);
+    });
 
     // DevTools
-    // window.webContents.openDevTools();
+    window.webContents.openDevTools();
 }
 
 app.whenReady().then(() => {
     // Handle application data being sent back
     ipcMain.handle('config:getAll', async () => {
-        return store.get('config');
+        return 'config';
     });
 
     createWindow();
